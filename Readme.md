@@ -6,8 +6,7 @@ This Ansible playbook will perform the following tasks:
 3. Add Kubernetes GPG key and repository
 4. Install Kubernetes packages (kubelet, kubeadm, and kubectl)
 5. Prevent Kubernetes packages from being automatically updated
-6. Restart and enable Docker service
-7. Enable and start kubelet service
+6. Enable and start kubelet service
 
 To use this playbook:
 
