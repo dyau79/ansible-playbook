@@ -16,3 +16,7 @@ To use this playbook:
 2. Ensure you have Ansible installed on your control machine
 3. Update your Ansible inventory file with the target Ubuntu 22.04 server(s)
 4. Run the playbook with: ```ansible-playbook -i your_inventory_file kubernetes-nvidia-playbook.yml```
+
+This playbook assumes you're running it on a ```single-node cluster```. For a multi-node cluster, you'd need to adjust the playbook to separate master and worker node tasks.
+
+Also, please be aware that the NVIDIA driver version (525 in this playbook) might need to be adjusted based on your specific GPU model and requirements.
