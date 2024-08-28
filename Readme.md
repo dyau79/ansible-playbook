@@ -1,5 +1,6 @@
 This Ansible playbook will perform the following tasks:
 
+```
 -Update the apt cache
 -Install required system packages
 -Add Docker GPG key and repository
@@ -9,7 +10,7 @@ This Ansible playbook will perform the following tasks:
 -Prevent Kubernetes packages from being automatically updated
 -Restart and enable Docker service
 -Enable and start kubelet service
-
+```
 To use this playbook:
 
 Save it to a file, for example, kubernetes_install.yml
