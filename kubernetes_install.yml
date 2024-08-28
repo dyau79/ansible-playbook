@@ -1,5 +1,5 @@
 ---
-- name: Install Kubernetes on Ubuntu 22.04
+- name: Install Kubernetes with NVIDIA GPU support
   hosts: all
   become: yes
   tasks:
@@ -7,7 +7,7 @@
       apt:
         update_cache: yes
 
-    - name: Install required system packages
+    - name: Install required packages
       apt:
         name:
           - apt-transport-https
@@ -17,18 +17,18 @@
           - software-properties-common
         state: present
 
-    - name: Add Kubernetes GPG apt Key
+    - name: Add Kubernetes apt-key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
 
-    - name: Add Kubernetes Repository
+    - name: Add Kubernetes repository
       apt_repository:
         repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
-        filename: kubernetes.list
+        filename: kubernetes
 
-    - name: Install Kubernetes packages
+    - name: Install Kubernetes components
       apt:
         name:
           - kubelet
@@ -36,7 +36,7 @@
           - kubectl
         state: present
 
-    - name: Hold Kubernetes packages at current version
+    - name: Hold Kubernetes packages at their current version
       dpkg_selections:
         name: "{{ item }}"
         selection: hold
@@ -45,8 +45,65 @@
         - kubeadm
         - kubectl
 
-    - name: Enable and start kubelet
-      service:
-        name: kubelet
-        enabled: yes
-        state: started
+    - name: Initialize Kubernetes cluster
+      command: kubeadm init --pod-network-cidr=192.168.0.0/16
+      register: kubeadm_init
+      changed_when: kubeadm_init.rc == 0
+
+    - name: Create .kube directory for the user
+      file:
+        path: ~/.kube
+        state: directory
+        mode: '0755'
+
+    - name: Copy admin.conf to user's .kube directory
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: ~/.kube/config
+        remote_src: yes
+        mode: '0644'
+
+    - name: Install Calico network plugin
+      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+    - name: Add NVIDIA GPU repository
+      apt_repository:
+        repo: deb https://nvidia.github.io/libnvidia-container/stable/ubuntu22.04/$(ARCH) /
+        state: present
+        filename: nvidia-container-toolkit
+
+    - name: Add NVIDIA GPU apt-key
+      apt_key:
+        url: https://nvidia.github.io/libnvidia-container/gpgkey
+        state: present
+
+    - name: Install NVIDIA drivers and container toolkit
+      apt:
+        name:
+          - nvidia-driver-525
+          - nvidia-container-toolkit
+        state: present
+        update_cache: yes
+
+    - name: Configure containerd for NVIDIA GPU support
+      lineinfile:
+        path: /etc/containerd/config.toml
+        line: '        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]'
+        insertafter: '    [plugins."io.containerd.grpc.v1.cri".containerd]'
+
+    - name: Configure containerd for NVIDIA GPU support (continued)
+      lineinfile:
+        path: /etc/containerd/config.toml
+        line: '            BinaryName = "/usr/bin/nvidia-container-runtime"'
+        insertafter: '        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]'
+
+    - name: Restart containerd
+      systemd:
+        name: containerd
+        state: restarted
+
+    - name: Install NVIDIA device plugin
+      command: kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.13.0/nvidia-device-plugin.yml
+
+    - name: Label the node for NVIDIA GPU
+      command: kubectl label nodes --all nvidia.com/gpu=present
