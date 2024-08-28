@@ -12,7 +12,7 @@ This Ansible playbook will:
 
 To use this playbook:
 
-Save it to a file, e.g., ```kubernetes-nvidia-playbook.yml```
-Ensure you have Ansible installed on your control machine
-Update your Ansible inventory file with the target Ubuntu 22.04 server(s)
-Run the playbook with: ```ansible-playbook -i your_inventory_file kubernetes-nvidia-playbook.yml```
+1. Save it to a file, e.g., ```kubernetes-nvidia-playbook.yml```
+2. Ensure you have Ansible installed on your control machine
+3. Update your Ansible inventory file with the target Ubuntu 22.04 server(s)
+4. Run the playbook with: ```ansible-playbook -i your_inventory_file kubernetes-nvidia-playbook.yml```
