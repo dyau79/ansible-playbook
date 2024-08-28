@@ -1,14 +1,14 @@
 This Ansible playbook will perform the following tasks:
 
-Update the apt cache
-Install required system packages
-Add Docker GPG key and repository
-Install Docker
-Add Kubernetes GPG key and repository
-Install Kubernetes packages (kubelet, kubeadm, and kubectl)
-Prevent Kubernetes packages from being automatically updated
-Restart and enable Docker service
-Enable and start kubelet service
+-Update the apt cache
+-Install required system packages
+-Add Docker GPG key and repository
+-Install Docker
+-Add Kubernetes GPG key and repository
+-Install Kubernetes packages (kubelet, kubeadm, and kubectl)
+-Prevent Kubernetes packages from being automatically updated
+-Restart and enable Docker service
+-Enable and start kubelet service
 
 To use this playbook:
 
