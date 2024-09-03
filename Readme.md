@@ -14,7 +14,7 @@ To use this playbook:
 
 1. Save it to a file, e.g., ```kubernetes-nvidia-playbook.yml```
 2. Ensure you have Ansible installed on your control machine
-3. Update your Ansible inventory file with the target Ubuntu 22.04 server(s)
+3. Update your Ansible inventory file with the target Debian or Ubuntu Server
 4. Run the playbook with: ```ansible-playbook -i your_inventory_file kubernetes-nvidia-playbook.yml```
 
 This playbook assumes you're running it on a ```single-node cluster```. For a multi-node cluster, you'd need to adjust the playbook to separate master and worker node tasks.
